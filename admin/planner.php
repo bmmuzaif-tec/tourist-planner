@@ -52,14 +52,34 @@ if(isset($_GET['edit'])){
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manage Visit Plans</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <style>
+        body{font-family:"Inter",sans-serif;background:var(--background);}
+        h1,h2,h3,h4,h5,h6{font-family:"Poppins",sans-serif;}
+        .navbar.bg-success{background:var(--primary) !important;}
+        .card{border-radius:var(--radius-sm);}
+        .btn{border-radius:999px;}
+    </style>
 </head>
 <body class="bg-light">
-<div class="container mt-5">
-    <h2 class="text-success fw-bold mb-4">📅 Manage Visit Plans</h2>
-    
+<div class="container mt-5 mb-5">
+
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3 reveal">
+        <h2 class="text-success fw-bold mb-0">📅 Manage Visit Plans</h2>
+        <a href="dashboard.php" class="btn btn-outline-secondary btn-sm">
+            <i class="bi bi-arrow-left"></i> Dashboard
+        </a>
+    </div>
+
     <!-- Form -->
-    <div class="card shadow-sm mb-5 border-0">
+    <div class="card shadow-sm mb-5 border-0 admin-card reveal">
         <div class="card-body p-4">
+            <h5 class="fw-bold mb-3">
+                <i class="bi bi-pencil-square text-success"></i>
+                <?= !empty($edit) ? 'Edit Plan #' . intval($edit['plan_id']) : 'Create New Plan' ?>
+            </h5>
             <form method="POST">
                 <input type="hidden" name="plan_id" value="<?= $edit['plan_id'] ?? '' ?>">
                 <div class="row mb-3">
@@ -74,14 +94,14 @@ if(isset($_GET['edit'])){
                 </div>
                 <div class="mb-3">
                     <label class="form-label fw-bold">Select Places</label>
-                    <div class="row">
+                    <div class="row g-2">
                         <?php 
                         $places_q = mysqli_query($conn, "SELECT place_id, place_name FROM tourist_places ORDER BY place_name");
                         while($p = mysqli_fetch_assoc($places_q)): 
                             $checked = in_array($p['place_id'], $edit_places) ? 'checked' : '';
                         ?>
-                        <div class="col-md-4 col-sm-6 mb-2">
-                            <div class="form-check border rounded p-2 bg-light">
+                        <div class="col-md-4 col-sm-6">
+                            <div class="form-check place-check-item">
                                 <input class="form-check-input" type="checkbox" name="places[]" value="<?= $p['place_id'] ?>" id="p<?= $p['place_id'] ?>" <?= $checked ?>>
                                 <label class="form-check-label" for="p<?= $p['place_id'] ?>"><?= htmlspecialchars($p['place_name']) ?></label>
                             </div>
@@ -89,16 +109,27 @@ if(isset($_GET['edit'])){
                         <?php endwhile; ?>
                     </div>
                 </div>
-                <button type="submit" name="save" class="btn btn-success w-100 fw-bold">💾 Save Plan</button>
+                <div class="d-flex gap-2">
+                    <button type="submit" name="save" class="btn btn-success fw-bold flex-grow-1">
+                        <i class="bi bi-save"></i> <?= !empty($edit) ? 'Update Plan' : 'Save Plan' ?>
+                    </button>
+                    <?php if(!empty($edit)): ?>
+                        <a href="planner.php" class="btn btn-outline-secondary">
+                            <i class="bi bi-x-circle"></i> Cancel
+                        </a>
+                    <?php endif; ?>
+                </div>
             </form>
         </div>
     </div>
 
     <!-- Table -->
-    <h3 class="fw-bold mb-3">All Visit Plans</h3>
-    <div class="card shadow-sm border-0">
+    <h3 class="fw-bold mb-3 reveal">
+        <i class="bi bi-list-check text-success"></i> All Visit Plans
+    </h3>
+    <div class="card shadow-sm border-0 admin-card reveal">
         <div class="table-responsive">
-            <table class="table table-hover mb-0">
+            <table class="table table-hover mb-0 align-middle">
                 <thead class="table-success">
                     <tr>
                         <th>ID</th>
@@ -118,25 +149,41 @@ if(isset($_GET['edit'])){
                             GROUP BY vp.plan_id ORDER BY vp.visit_date DESC";
                     $result = mysqli_query($conn, $sql);
                     if(mysqli_num_rows($result) > 0): 
+                        $i = 0;
                         while($row = mysqli_fetch_assoc($result)): 
+                            $i++;
+                            $delay = ($i % 5) + 1;
                     ?>
-                    <tr>
+                    <tr class="reveal reveal-delay-<?= $delay ?>">
                         <td><span class="badge bg-secondary">#<?= $row['plan_id'] ?></span></td>
                         <td class="fw-bold"><?= htmlspecialchars($row['visitor_name']) ?></td>
                         <td><?= date('d M Y', strtotime($row['visit_date'])) ?></td>
                         <td class="small text-muted"><?= htmlspecialchars($row['places'] ?? 'None') ?></td>
                         <td class="text-center">
-                            <a href="planner.php?edit=<?= $row['plan_id'] ?>" class="btn btn-primary btn-sm">✏️ Edit</a>
-                            <a href="planner.php?delete=<?= $row['plan_id'] ?>" class="btn btn-outline-danger btn-sm" onclick="return confirm('Delete this plan?')">🗑️ Delete</a>
+                            <a href="planner.php?edit=<?= $row['plan_id'] ?>" class="btn btn-primary btn-sm">
+                                <i class="bi bi-pencil"></i> Edit
+                            </a>
+                            <a href="planner.php?delete=<?= $row['plan_id'] ?>" class="btn btn-outline-danger btn-sm" onclick="return confirm('Delete this plan?')">
+                                <i class="bi bi-trash"></i> Delete
+                            </a>
                         </td>
                     </tr>
                     <?php endwhile; else: ?>
-                    <tr><td colspan="5" class="text-center py-4 text-muted">No visit plans found.</td></tr>
+                    <tr>
+                        <td colspan="5" class="text-center py-4">
+                            <div class="empty-state">
+                                <div class="empty-icon mb-2">
+                                    <i class="bi bi-calendar-x"></i>
+                                </div>
+                                <p class="mb-0 text-muted">No visit plans found.</p>
+                            </div>
+                        </td>
+                    </tr>
                     <?php endif; ?>
                 </tbody>
             </table>
         </div>
     </div>
 </div>
-</body>
-</html>
+
+<?php include '../includes/footer.php'; ?>
