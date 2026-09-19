@@ -10,7 +10,7 @@ if (!isset($_SESSION['csrf_token'])) {
     $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
 }
 
-// Session-based attempt tracking (instead of database)
+// Session-based attempt tracking
 if (!isset($_SESSION['attempts'])) {
     $_SESSION['attempts'] = 0;
     $_SESSION['lockout'] = 0;
@@ -18,7 +18,11 @@ if (!isset($_SESSION['attempts'])) {
 
 // Check if locked out
 if ($_SESSION['lockout'] && time() < $_SESSION['lockout']) {
+<<<<<<< HEAD
     $error = "⛔ Too many attempts. Try again after 1 minutes.";
+=======
+    $error = "⛔ Too many attempts. Try again after 1 minute.";
+>>>>>>> b3ac111 (Fix session security and lockout message)
 } elseif (isset($_POST['login']) && (!$_SESSION['lockout'] || time() >= $_SESSION['lockout'])) {
     
     // CSRF Validation
@@ -28,7 +32,6 @@ if ($_SESSION['lockout'] && time() < $_SESSION['lockout']) {
         $user = trim($_POST['username']);
         $pass = $_POST['password'];
 
-        // ✅ FIXED: Using 'administrator' table
         $stmt = $conn->prepare("SELECT admin_id, full_name, username, password, role, failed_attempts, lock_until FROM administrator WHERE username = ?");
         $stmt->bind_param("s", $user);
         $stmt->execute();
@@ -43,6 +46,10 @@ if ($_SESSION['lockout'] && time() < $_SESSION['lockout']) {
             } else {
                 // Verify password
                 if (password_verify($pass, $admin['password'])) {
+                    
+                    // ✅ SECURITY FIX: Regenerate session ID to prevent session fixation
+                    session_regenerate_id(true);
+                    
                     // Reset failed attempts in database
                     $update = $conn->prepare("UPDATE administrator SET failed_attempts = 0, lock_until = NULL WHERE admin_id = ?");
                     $update->bind_param("i", $admin['admin_id']);
@@ -58,6 +65,7 @@ if ($_SESSION['lockout'] && time() < $_SESSION['lockout']) {
                     $_SESSION['admin_name'] = $admin['full_name'];
                     $_SESSION['username'] = $admin['username'];
                     $_SESSION['role'] = $admin['role'];
+                    $_SESSION['LAST_ACTIVITY'] = time();
 
                     // Remember me cookie
                     if (isset($_POST['remember'])) {
@@ -77,15 +85,19 @@ if ($_SESSION['lockout'] && time() < $_SESSION['lockout']) {
                     $update->execute();
                     $update->close();
 
-                    // Lock if >= 5 attempts
+                    // Lock if >= 5 attempts (60 seconds for demo)
                     if ($_SESSION['attempts'] >= 5) {
-                        $_SESSION['lockout'] = time() + 60; // 15 minutes
+                        $_SESSION['lockout'] = time() + 60;
                         $lock_until = date('Y-m-d H:i:s', time() + 60);
                         $update = $conn->prepare("UPDATE administrator SET lock_until = ? WHERE username = ?");
                         $update->bind_param("ss", $lock_until, $user);
                         $update->execute();
                         $update->close();
+<<<<<<< HEAD
                         $error = "⛔ Too many failed attempts. Account locked for 1 minutes.";
+=======
+                        $error = "⛔ Too many failed attempts. Account locked for 1 minute.";
+>>>>>>> b3ac111 (Fix session security and lockout message)
                     } else {
                         $error = "❌ Invalid credentials. Attempts: " . $_SESSION['attempts'] . "/5";
                     }
@@ -95,7 +107,11 @@ if ($_SESSION['lockout'] && time() < $_SESSION['lockout']) {
             $_SESSION['attempts']++;
             if ($_SESSION['attempts'] >= 5) {
                 $_SESSION['lockout'] = time() + 60;
+<<<<<<< HEAD
                 $error = "⛔ Too many failed attempts. Try again after 1 minutes.";
+=======
+                $error = "⛔ Too many failed attempts. Try again after 1 minute.";
+>>>>>>> b3ac111 (Fix session security and lockout message)
             } else {
                 $error = "❌ Invalid credentials. Attempts: " . $_SESSION['attempts'] . "/5";
             }
@@ -189,9 +205,6 @@ if ($_SESSION['lockout'] && time() < $_SESSION['lockout']) {
                         <a href="../index.php" class="text-muted text-decoration-none">
                             <i class="bi bi-arrow-left"></i> Back to Website
                         </a>
-                    </div>
-                    <div class="text-center mt-2">
-                        <small class="text-muted">Default: admin / admin123</small>
                     </div>
                 </div>
             </div>
