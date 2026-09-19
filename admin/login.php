@@ -18,7 +18,7 @@ if (!isset($_SESSION['attempts'])) {
 
 // Check if locked out
 if ($_SESSION['lockout'] && time() < $_SESSION['lockout']) {
-    $error = "⛔ Too many attempts. Try again after 15 minutes.";
+    $error = "⛔ Too many attempts. Try again after 1 minutes.";
 } elseif (isset($_POST['login']) && (!$_SESSION['lockout'] || time() >= $_SESSION['lockout'])) {
     
     // CSRF Validation
