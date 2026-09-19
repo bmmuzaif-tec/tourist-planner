@@ -85,7 +85,7 @@ if ($_SESSION['lockout'] && time() < $_SESSION['lockout']) {
                         $update->bind_param("ss", $lock_until, $user);
                         $update->execute();
                         $update->close();
-                        $error = "⛔ Too many failed attempts. Account locked for 15 minutes.";
+                        $error = "⛔ Too many failed attempts. Account locked for 1 minutes.";
                     } else {
                         $error = "❌ Invalid credentials. Attempts: " . $_SESSION['attempts'] . "/5";
                     }
@@ -95,7 +95,7 @@ if ($_SESSION['lockout'] && time() < $_SESSION['lockout']) {
             $_SESSION['attempts']++;
             if ($_SESSION['attempts'] >= 5) {
                 $_SESSION['lockout'] = time() + 60;
-                $error = "⛔ Too many failed attempts. Try again after 15 minutes.";
+                $error = "⛔ Too many failed attempts. Try again after 1 minutes.";
             } else {
                 $error = "❌ Invalid credentials. Attempts: " . $_SESSION['attempts'] . "/5";
             }
