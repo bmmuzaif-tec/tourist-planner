@@ -18,11 +18,7 @@ if (!isset($_SESSION['attempts'])) {
 
 // Check if locked out
 if ($_SESSION['lockout'] && time() < $_SESSION['lockout']) {
-<<<<<<< HEAD
-    $error = "⛔ Too many attempts. Try again after 1 minutes.";
-=======
     $error = "⛔ Too many attempts. Try again after 1 minute.";
->>>>>>> b3ac111 (Fix session security and lockout message)
 } elseif (isset($_POST['login']) && (!$_SESSION['lockout'] || time() >= $_SESSION['lockout'])) {
     
     // CSRF Validation
@@ -47,7 +43,7 @@ if ($_SESSION['lockout'] && time() < $_SESSION['lockout']) {
                 // Verify password
                 if (password_verify($pass, $admin['password'])) {
                     
-                    // ✅ SECURITY FIX: Regenerate session ID to prevent session fixation
+                    // SECURITY: Regenerate session ID
                     session_regenerate_id(true);
                     
                     // Reset failed attempts in database
@@ -75,17 +71,14 @@ if ($_SESSION['lockout'] && time() < $_SESSION['lockout']) {
                     header("Location: dashboard.php");
                     exit();
                 } else {
-                    // Increment failed attempts in session
                     $_SESSION['attempts']++;
                     $failed = $_SESSION['attempts'];
 
-                    // Update database failed_attempts
                     $update = $conn->prepare("UPDATE administrator SET failed_attempts = ? WHERE username = ?");
                     $update->bind_param("is", $failed, $user);
                     $update->execute();
                     $update->close();
 
-                    // Lock if >= 5 attempts (60 seconds for demo)
                     if ($_SESSION['attempts'] >= 5) {
                         $_SESSION['lockout'] = time() + 60;
                         $lock_until = date('Y-m-d H:i:s', time() + 60);
@@ -93,11 +86,7 @@ if ($_SESSION['lockout'] && time() < $_SESSION['lockout']) {
                         $update->bind_param("ss", $lock_until, $user);
                         $update->execute();
                         $update->close();
-<<<<<<< HEAD
-                        $error = "⛔ Too many failed attempts. Account locked for 1 minutes.";
-=======
                         $error = "⛔ Too many failed attempts. Account locked for 1 minute.";
->>>>>>> b3ac111 (Fix session security and lockout message)
                     } else {
                         $error = "❌ Invalid credentials. Attempts: " . $_SESSION['attempts'] . "/5";
                     }
@@ -107,11 +96,7 @@ if ($_SESSION['lockout'] && time() < $_SESSION['lockout']) {
             $_SESSION['attempts']++;
             if ($_SESSION['attempts'] >= 5) {
                 $_SESSION['lockout'] = time() + 60;
-<<<<<<< HEAD
-                $error = "⛔ Too many failed attempts. Try again after 1 minutes.";
-=======
                 $error = "⛔ Too many failed attempts. Try again after 1 minute.";
->>>>>>> b3ac111 (Fix session security and lockout message)
             } else {
                 $error = "❌ Invalid credentials. Attempts: " . $_SESSION['attempts'] . "/5";
             }
