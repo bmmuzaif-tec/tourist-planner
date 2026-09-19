@@ -1,0 +1,19 @@
+# Sensitive config
+config/db.php
+config/*.php
+!config/db.example.php
+
+# Uploads
+admin/uploads/*
+!admin/uploads/.gitkeep
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
