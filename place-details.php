@@ -58,24 +58,27 @@ if(!empty($imgName)) {
         </button>
     </div>
 
-    <!-- TITLE + META HEADER -->
+    <!-- TITLE + META HEADER (Duplicate button REMOVED, meta info RESTORED) -->
     <div class="place-header reveal">
         <div class="row align-items-end g-3">
-            <div class="col-md-8">
+            <div class="col-12">
                 <span class="badge bg-success mb-2">
                     <i class="bi bi-tag-fill"></i> <?= htmlspecialchars($place['category_name']) ?>
                 </span>
                 <h1 class="place-title mb-2"><?= htmlspecialchars($place['place_name']) ?></h1>
                 <div class="d-flex flex-wrap align-items-center gap-3 text-muted small">
+                    <!-- Rating -->
                     <span>
                         <i class="bi bi-star-fill text-warning"></i>
                         <strong class="text-dark"><?= $avgRating ?></strong>
                         (<?= $reviewCount ?> review<?= $reviewCount == 1 ? '' : 's' ?>)
                     </span>
+                    <!-- Distance -->
                     <span>
                         <i class="bi bi-geo-alt-fill text-success"></i>
                         <?= htmlspecialchars($place['distance']) ?> km from Eravur
                     </span>
+                    <!-- Opening Hours -->
                     <?php if(!empty($place['opening_hours'])): ?>
                     <span>
                         <i class="bi bi-clock-fill text-primary"></i>
@@ -84,15 +87,10 @@ if(!empty($imgName)) {
                     <?php endif; ?>
                 </div>
             </div>
-            <div class="col-md-4 text-md-end">
-                <a href="planner.php" class="btn btn-success btn-lg">
-                    <i class="bi bi-calendar-plus"></i> Add to Plan
-                </a>
-            </div>
         </div>
     </div>
 
-    <!-- SINGLE IMAGE (No duplication!) -->
+    <!-- SINGLE IMAGE -->
     <div class="single-image-wrap reveal reveal-delay-1">
         <img src="<?= $imgPath ?>" alt="<?= htmlspecialchars($place['place_name']) ?>" class="single-image">
     </div>
