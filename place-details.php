@@ -48,7 +48,7 @@ if(!empty($imgName)) {
 
 <div class="container mt-4 mb-5">
 
-    <!-- BREADCRUMB -->
+    <!-- BREADCRUMB + SHARE -->
     <div class="d-flex justify-content-between align-items-center mb-3 reveal">
         <a href="places.php" class="text-muted small text-decoration-none">
             <i class="bi bi-arrow-left"></i> Back to Places
