@@ -1,25 +1,19 @@
 <?php
-// ==========================================
-// ✅ Timezone Setting (Sri Lanka)
-// ==========================================
+// Timezone (Sri Lanka)
 date_default_timezone_set('Asia/Colombo');
 
 ob_start();
 require_once __DIR__ . '/fpdf/fpdf.php';
 include 'config/db.php';
 
-// ==========================================
 // Check Plan ID
-// ==========================================
 if(!isset($_GET['id'])){
     die("Invalid Visit Plan ID");
 }
 
 $plan_id = intval($_GET['id']);
 
-// ==========================================
 // Get Visit Plan Details
-// ==========================================
 $plan_sql = "SELECT * FROM visit_plan WHERE plan_id = $plan_id";
 $plan_result = mysqli_query($conn, $plan_sql);
 
@@ -28,28 +22,14 @@ if(mysqli_num_rows($plan_result) == 0){
 }
 
 $plan = mysqli_fetch_assoc($plan_result);
-
-// ==========================================
-// ✅ FIX: Block PAST dates (Allow today + future)
-// ==========================================
 $visit_date = $plan['visit_date'];
-$today = date('Y-m-d');
-
-// ❌ Past date check
-if(strtotime($visit_date) < strtotime($today)){
-    die("
-    <div style='font-family:sans-serif;text-align:center;padding:50px;'>
-        <h2 style='color:#dc3545;'>⚠️ Invalid Visit Date</h2>
-        <p>Cannot generate PDF for past dates.</p>
-        <p><strong>Visit Date:</strong> " . date('d M Y', strtotime($visit_date)) . "</p>
-        <p><strong>Today:</strong> " . date('d M Y') . "</p>
-        <p><a href='planner.php' style='color:#0B6E4F;'>← Back to Planner</a></p>
-    </div>");
-}
 
 // ==========================================
+// ✅ NO DATE VALIDATION HERE
+// Old plans can still export PDF
+// ==========================================
+
 // Get Places in Plan
-// ==========================================
 $sql = "
     SELECT vpd.visit_order, tp.place_name, c.category_name, tp.distance, tp.opening_hours, tp.address
     FROM visit_plan_details vpd
@@ -60,9 +40,7 @@ $sql = "
 ";
 $result = mysqli_query($conn, $sql);
 
-// ==========================================
 // Create PDF
-// ==========================================
 $pdf = new FPDF();
 $pdf->AddPage();
 
