@@ -48,9 +48,12 @@ if(isset($_GET['delete'])){
                         <input type="text" name="visitor_name" class="form-control" required>
                     </div>
                     <div class="col-md-6">
-                        <label class="form-label">Visit Date</label>
-                        <input type="date" name="visit_date" class="form-control" required>
-                    </div>
+    <label class="form-label">Visit Date</label>
+    <!-- ✅ min: Blocks past dates -->
+    <input type="date" name="visit_date" class="form-control" 
+           min="<?= date('Y-m-d') ?>" required>
+    <small class="text-muted">Past dates are not allowed</small>
+</div>
                 </div>
 
                 <div class="mb-3">
