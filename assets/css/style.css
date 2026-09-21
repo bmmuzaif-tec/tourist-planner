@@ -66,6 +66,7 @@ a:hover { color: var(--primary-dark); }
 /* NAVBAR */
 .navbar.site-navbar {
     background: rgba(255, 255, 255, 0.92);
+    -webkit-backdrop-filter: blur(10px);
     backdrop-filter: blur(10px);
     box-shadow: 0 2px 16px rgba(11, 60, 40, 0.06);
     padding-top: 14px;
