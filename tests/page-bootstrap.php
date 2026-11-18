@@ -7,6 +7,14 @@
 error_reporting(E_ALL & ~E_DEPRECATED & ~E_WARNING & ~E_NOTICE);
 ini_set('display_errors', '1');
 
+if (PHP_SAPI !== 'cli') {
+    if (!headers_sent()) {
+        http_response_code(403);
+    }
+    fwrite(STDERR, "FORBIDDEN\n");
+    exit(1);
+}
+
 $payload = json_decode(base64_decode($argv[1] ?? ''), true);
 if (!is_array($payload)) {
     fwrite(STDERR, "BAD PAYLOAD\n");
